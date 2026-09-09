@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Echosounder</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1c1a17, #2e2822, #3d332a);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #221f1a;
+    border: 4px solid #d4a24e;
+    border-radius: 20px;
+    max-width: 640px;
+    width: 100%;
+    padding: 24px 28px 32px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    color: #fff;
+  }
+  h1 { text-align: center; color: #d4a24e; margin: 0 0 4px; font-size: 26px; letter-spacing: 1px; }
+  .subtitle { text-align: center; color: #c9bfae; font-size: 13px; margin-bottom: 20px; }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #332c22;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .top-bar .lives { font-size: 18px; letter-spacing: 3px; }
+  .top-bar .score-block { text-align: center; }
+  .top-bar .score-block .label { font-size: 11px; color: #c9bfae; }
+  .top-bar .score-block .val { font-size: 22px; font-weight: 700; }
+  .streak-badge {
+    background: linear-gradient(90deg,#b8863f,#d4a24e);
+    color: #221f1a;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    display: inline-block;
+  }
+  .streak-badge.off { background: #3d3327; color: #8f8672; }
+
+  .progress { text-align: center; font-size: 13px; color: #c9bfae; margin-bottom: 14px; }
+  .timer-wrap { margin-bottom: 14px; }
+  .timer-bar-bg { width: 100%; height: 10px; background: #332c22; border-radius: 6px; overflow: hidden; }
+  .timer-bar-fill { height: 100%; background: #d4a24e; border-radius: 6px; transition: width 1s linear, background 0.3s; }
+  .timer-text { text-align: center; font-size: 13px; color: #d4a24e; margin-top: 4px; font-weight: 700; }
+
+  .question-box {
+    background: #2b2620; border-radius: 14px; padding: 20px; margin-bottom: 16px;
+    text-align: center; min-height: 70px; display: flex; align-items: center; justify-content: center;
+  }
+  .question-box p { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.5; }
+
+  .powerup-row { text-align: center; margin-bottom: 14px; }
+  .powerup-btn {
+    background: #2a4d3a; border: 2px solid #4caf50; color: #a5d6a7;
+    padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .powerup-btn:hover:not(:disabled) { background: #35603f; }
+  .powerup-btn:disabled { opacity: 0.35; cursor: default; }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 480px) { .options { grid-template-columns: 1fr; } }
+  .opt-btn {
+    background: #3d3327; border: 2px solid #5c4d38; color: #fff; padding: 14px 16px;
+    border-radius: 12px; font-size: 15px; text-align: left; cursor: pointer; transition: all 0.15s;
+  }
+  .opt-btn:hover:not(:disabled) { background: #4d4030; border-color: #d4a24e; }
+  .opt-btn:disabled { cursor: default; }
+  .opt-btn.eliminated { opacity: 0.25; text-decoration: line-through; }
+  .opt-btn .letter {
+    display: inline-block; background: #d4a24e; color: #221f1a; width: 24px; height: 24px;
+    border-radius: 50%; text-align: center; line-height: 24px; font-weight: 700; margin-right: 10px; font-size: 13px;
+  }
+  .opt-btn.correct { background: #2e7d32; border-color: #66bb6a; }
+  .opt-btn.wrong { background: #b23a48; border-color: #e57373; }
+
+  .feedback { text-align: center; font-size: 15px; font-weight: 600; margin-bottom: 14px; min-height: 20px; }
+  .feedback.good { color: #81c784; }
+  .feedback.bad { color: #ef9a9a; }
+
+  .next-btn, .start-btn {
+    display: block; margin: 0 auto; background: #d4a24e; color: #221f1a; border: none;
+    padding: 12px 28px; border-radius: 30px; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.15s;
+  }
+  .next-btn:hover, .start-btn:hover { transform: translateY(-2px); }
+
+  .final { text-align: center; }
+  .final .headline { font-size: 22px; font-weight: 700; color: #d4a24e; margin: 10px 0 6px; }
+  .final .score-big { font-size: 44px; font-weight: 800; margin-bottom: 4px; }
+  .final .detail { color: #c9bfae; font-size: 13px; margin-bottom: 6px; }
+  .final .highscore { font-size: 13px; color: #e8c98a; font-weight: 700; margin-bottom: 22px; }
+
+  .start-screen { text-align: center; padding: 10px 0 4px; }
+  .start-screen p { color: #c9bfae; font-size: 14px; line-height: 1.6; margin: 0 0 18px; }
+  .rules-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; text-align: left;
+  }
+  @media (max-width: 480px) { .rules-grid { grid-template-columns: 1fr; } }
+  .rule-item {
+    background: #332c22; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; color: #ded4c0;
+  }
+  .rule-item b { color: #d4a24e; }
+  .name-input {
+    width: 100%; max-width: 280px; padding: 12px 14px; border-radius: 10px; border: 2px solid #5c4d38;
+    background: #332c22; color: #fff; font-size: 15px; margin-bottom: 18px; text-align: center;
+  }
+  .name-input::placeholder { color: #8f8672; }
+  .device-note { background: #332c22; border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #c9bfae; margin-top: 18px; }
+
+  .history-panel {
+    background: #332c22;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 14px;
+    text-align: left;
+  }
+  .history-panel .h-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #d4a24e;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .history-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: #ded4c0;
+    padding: 5px 0;
+    border-bottom: 1px solid #3d3327;
+  }
+  .history-row:last-child { border-bottom: none; }
+  .history-row .h-name { font-weight: 700; }
+  .history-row .h-time { color: #8f8672; font-size: 11px; }
+  .history-row .h-score { color: #d4a24e; font-weight: 700; }
+  .history-empty { text-align: center; font-size: 12px; color: #8f8672; padding: 4px 0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>KUIS ECHOSOUNDER</h1>
+  <div class="subtitle">Nyawa 3 &middot; combo streak &middot; power-up 50:50 &middot; 10 detik per soal</div>
+  <div id="app"></div>
+</div>
+
+<script>
+const QUESTIONS = [
+  { q: "Alat yang digunakan untuk mengukur kedalaman laut dengan memanfaatkan gelombang suara disebut …", opts: ["Radar", "Echosounder", "Kompas", "Barometer"], a: 1 },
+  { q: "Komponen echosounder yang berfungsi mengubah energi listrik menjadi gelombang suara dan menerima kembali pantulannya adalah …", opts: ["Transducer", "Display", "Baterai", "Kabel data"], a: 0 },
+  { q: "Prinsip dasar kerja echosounder adalah …", opts: ["Mengukur tekanan air", "Mengukur kecepatan angin", "Mengukur waktu tempuh gelombang suara yang dipantulkan dasar perairan", "Mengukur suhu udara"], a: 2 },
+  { q: "Gelombang suara yang dipancarkan oleh echosounder menuju dasar perairan akan …", opts: ["Diserap seluruhnya oleh air", "Dipantulkan kembali ke transducer", "Berubah menjadi gelombang radio", "Menghilang tanpa pantulan"], a: 1 },
+  { q: "Komponen yang berfungsi menampilkan hasil pengukuran kedalaman adalah …", opts: ["Transducer", "Display/monitor", "Transmitter", "Propeller"], a: 1 },
+  { q: "Jika waktu yang dibutuhkan gelombang suara untuk pergi ke dasar dan kembali semakin lama, maka kedalaman perairan …", opts: ["Semakin dangkal", "Tetap", "Semakin dalam", "Tidak dapat diketahui"], a: 2 },
+  { q: "Secara sederhana, kedalaman perairan pada echosounder dapat dihitung menggunakan rumus …", opts: ["d = v × t", "d = v × t / 2", "d = t / v", "d = v / t"], a: 1 },
+  { q: "Huruf v pada perhitungan kedalaman echosounder menunjukkan …", opts: ["Volume air", "Kecepatan gelombang suara", "Variasi kedalaman", "Waktu pantulan"], a: 1 },
+  { q: "Mengapa waktu tempuh gelombang suara dibagi dua dalam perhitungan kedalaman?", opts: ["Karena gelombang mengalami perubahan arah", "Karena gelombang menempuh perjalanan pergi dan kembali", "Karena kecepatan suara berkurang", "Karena tekanan air meningkat"], a: 1 },
+  { q: "Sebelum mengoperasikan echosounder, salah satu hal yang perlu diperiksa adalah …", opts: ["Warna kapal", "Kondisi transducer dan sumber daya", "Arah angin saja", "Bentuk jangkar"], a: 1 }
+];
+
+const TIME_LIMIT = 10;
+const MAX_LIVES = 3;
+const HIGH_SCORE_KEY = 'echosounder_family100_highscore';
+const HISTORY_KEY = 'echosounder_family100_history';
+const HISTORY_LIMIT = 8;
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getHighScore() {
+  try { return parseInt(localStorage.getItem(HIGH_SCORE_KEY) || '0', 10); } catch (e) { return 0; }
+}
+function setHighScore(v) {
+  try { localStorage.setItem(HIGH_SCORE_KEY, String(v)); } catch (e) {}
+}
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { return []; }
+}
+function addHistoryEntry(entry) {
+  try {
+    const list = getHistory();
+    list.unshift(entry);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_LIMIT)));
+  } catch (e) {}
+}
+function formatTime(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function multiplierFor(streak) {
+  if (streak >= 4) return 2;
+  if (streak >= 2) return 1.5;
+  return 1;
+}
+
+let state = {
+  started: false, name: '', order: [], idx: 0,
+  score: 0, correctCount: 0, lives: MAX_LIVES, streak: 0,
+  usedFifty: false, eliminated: [], over: false, gameOver: false
+};
+let timeLeft = TIME_LIMIT;
+let timerId = null;
+const root = document.getElementById('app');
+const letter = i => String.fromCharCode(65 + i);
+
+function renderStart() {
+  const hs = getHighScore();
+  const history = getHistory();
+  const historyHtml = history.length
+    ? history.map(h => `
+        <div class="history-row">
+          <span class="h-name">${h.name}</span>
+          <span class="h-time">${formatTime(h.ts)}</span>
+          <span class="h-score">${h.score} pts</span>
+        </div>
+      `).join('')
+    : '<div class="history-empty">Belum ada yang main di device ini.</div>';
+
+  root.innerHTML = `
+    <div class="start-screen">
+      <p>Jawab 10 soal echosounder dengan urutan acak. Ini bukan sekadar kuis biasa &mdash; ada nyawa, combo, dan power-up.</p>
+      <div class="rules-grid">
+        <div class="rule-item">❤️ <b>3 nyawa</b> &mdash; salah atau kehabisan waktu, nyawa berkurang. Habis nyawa = Game Over.</div>
+        <div class="rule-item">🔥 <b>Combo streak</b> &mdash; 2-3 benar beruntun = poin x1.5, 4+ beruntun = poin x2.</div>
+        <div class="rule-item">🧩 <b>Power-up 50:50</b> &mdash; sekali pakai, hilangkan 2 jawaban salah saat kepepet.</div>
+        <div class="rule-item">⏱️ <b>10 detik/soal</b> &mdash; makin cepat jawab benar, bonus poin makin besar.</div>
+      </div>
+      <input type="text" class="name-input" id="nameInput" placeholder="Nama kamu (opsional)" maxlength="20">
+      <button class="start-btn" id="startBtn">Mulai kuis</button>
+      <div class="device-note">Rekor tertinggi di device ini: <b>${hs}</b> poin.</div>
+      <div class="history-panel">
+        <div class="h-title">RIWAYAT MAIN DI DEVICE INI</div>
+        ${historyHtml}
+      </div>
+    </div>
+  `;
+  root.querySelector('#startBtn').onclick = () => {
+    const nameVal = root.querySelector('#nameInput').value.trim();
+    state = {
+      started: true, name: nameVal || 'Pemain', order: shuffle(QUESTIONS.map((_, i) => i)), idx: 0,
+      score: 0, correctCount: 0, lives: MAX_LIVES, streak: 0,
+      usedFifty: false, eliminated: [], over: false, gameOver: false
+    };
+    render();
+  };
+}
+
+function render() {
+  if (!state.started) { renderStart(); return; }
+  if (state.over) { renderFinal(); return; }
+  const item = QUESTIONS[state.order[state.idx]];
+  timeLeft = TIME_LIMIT;
+  state.eliminated = [];
+  const mult = multiplierFor(state.streak);
+  const hearts = '❤️'.repeat(state.lives) + '🖤'.repeat(MAX_LIVES - state.lives);
+
+  root.innerHTML = `
+    <div class="top-bar">
+      <div class="lives">${hearts}</div>
+      <div class="score-block">
+        <div class="label">SKOR</div>
+        <div class="val">${state.score}</div>
+      </div>
+      <div class="streak-badge ${state.streak > 0 ? '' : 'off'}">🔥 x${mult} ${state.streak > 0 ? '(' + state.streak + ' beruntun)' : ''}</div>
+    </div>
+    <div class="progress">Soal ${state.idx + 1} dari ${QUESTIONS.length}</div>
+    <div class="timer-wrap">
+      <div class="timer-bar-bg"><div class="timer-bar-fill" id="timerFill" style="width:100%;"></div></div>
+      <div class="timer-text" id="timerText">${TIME_LIMIT} detik</div>
+    </div>
+    <div class="question-box"><p>${item.q}</p></div>
+    <div class="powerup-row">
+      <button class="powerup-btn" id="fiftyBtn" ${state.usedFifty ? 'disabled' : ''}>🧩 Pakai 50:50</button>
+    </div>
+    <div class="options" id="opts"></div>
+    <div class="feedback" id="feedback"></div>
+    <div id="nextWrap" style="text-align:center;"></div>
+  `;
+  const optsEl = root.querySelector('#opts');
+  item.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.dataset.idx = i;
+    btn.innerHTML = `<span class="letter">${letter(i)}</span>${opt}`;
+    btn.onclick = () => answer(i);
+    optsEl.appendChild(btn);
+  });
+
+  root.querySelector('#fiftyBtn').onclick = () => {
+    if (state.usedFifty) return;
+    state.usedFifty = true;
+    const wrongIdx = item.opts.map((_, i) => i).filter(i => i !== item.a);
+    const toRemove = shuffle(wrongIdx).slice(0, 2);
+    toRemove.forEach(i => {
+      const b = optsEl.querySelector(`[data-idx="${i}"]`);
+      if (b) { b.classList.add('eliminated'); b.disabled = true; }
+    });
+    root.querySelector('#fiftyBtn').disabled = true;
+  };
+
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerId);
+  updateTimerUI();
+  timerId = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+      timeLeft = 0;
+      updateTimerUI();
+      answer(-1);
+      return;
+    }
+    updateTimerUI();
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const fill = root.querySelector('#timerFill');
+  const text = root.querySelector('#timerText');
+  if (!fill || !text) return;
+  const pct = (timeLeft / TIME_LIMIT) * 100;
+  fill.style.width = pct + '%';
+  fill.style.background = timeLeft <= 3 ? '#e57373' : '#d4a24e';
+  text.textContent = timeLeft + ' detik';
+}
+
+function answer(i) {
+  clearInterval(timerId);
+  const item = QUESTIONS[state.order[state.idx]];
+  const correct = i === item.a;
+  const optsEl = root.querySelector('#opts');
+  root.querySelector('#fiftyBtn').disabled = true;
+  [...optsEl.children].forEach((b, j) => {
+    b.disabled = true;
+    if (j === i) b.classList.add(correct ? 'correct' : 'wrong');
+  });
+
+  const feedbackEl = root.querySelector('#feedback');
+  if (correct) {
+    state.streak++;
+    const mult = multiplierFor(state.streak);
+    const bonus = Math.max(0, timeLeft);
+    const gained = Math.round((10 + bonus) * mult);
+    state.score += gained;
+    state.correctCount++;
+    feedbackEl.textContent = `Benar! +${gained} poin (bonus x${mult} combo).`;
+    feedbackEl.className = 'feedback good';
+  } else {
+    state.streak = 0;
+    state.lives--;
+    feedbackEl.textContent = (i === -1 ? 'Waktu habis! ' : 'Kurang tepat! ') + `Nyawa tersisa ${state.lives}.`;
+    feedbackEl.className = 'feedback bad';
+  }
+
+  const nextWrap = root.querySelector('#nextWrap');
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'next-btn';
+
+  if (state.lives <= 0) {
+    nextBtn.textContent = 'Lihat hasil';
+    nextBtn.onclick = () => { state.gameOver = true; state.over = true; render(); };
+  } else {
+    nextBtn.textContent = state.idx === QUESTIONS.length - 1 ? 'Lihat hasil akhir' : 'Soal berikutnya';
+    nextBtn.onclick = () => {
+      state.idx++;
+      if (state.idx >= QUESTIONS.length) state.over = true;
+      render();
+    };
+  }
+  nextWrap.appendChild(nextBtn);
+}
+
+function renderFinal() {
+  clearInterval(timerId);
+  const hsOld = getHighScore();
+  const isNewHigh = state.score > hsOld;
+  if (isNewHigh) setHighScore(state.score);
+  const hsShown = isNewHigh ? state.score : hsOld;
+  addHistoryEntry({ name: state.name, score: state.score, correct: state.correctCount, ts: Date.now() });
+
+  let headline;
+  if (state.gameOver) headline = 'Game Over!';
+  else if (state.correctCount === QUESTIONS.length) headline = 'Sempurna!';
+  else if (state.correctCount >= QUESTIONS.length * 0.7) headline = 'Bagus sekali!';
+  else if (state.correctCount >= QUESTIONS.length * 0.4) headline = 'Lumayan, terus belajar!';
+  else headline = 'Ayo coba lagi!';
+
+  root.innerHTML = `
+    <div class="final">
+      <div class="progress">${state.gameOver ? 'Nyawa habis' : 'Hasil akhir'}</div>
+      <div class="headline">${headline}</div>
+      <div class="score-big">${state.score}</div>
+      <div class="detail">${state.name} &middot; benar ${state.correctCount} dari ${state.gameOver ? state.idx + 1 : QUESTIONS.length} soal dicoba</div>
+      <div class="highscore">${isNewHigh ? '🏆 Rekor baru di device ini!' : 'Rekor tertinggi di device ini: ' + hsShown + ' poin'}</div>
+      <button class="start-btn" id="restart">Main lagi</button>
+      <div class="device-note">Sesi ini otomatis tercatat di "Riwayat main" pada layar awal, jadi tiap yang main di device ini kelihatan datanya.</div>
+    </div>
+  `;
+  root.querySelector('#restart').onclick = () => { state.started = false; render(); };
+}
+
+render();
+</script>
+</body>
+</html>
