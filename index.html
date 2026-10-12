@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kuis Echosounder</title>
+<title>Kuis Resolusi Rentang</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -155,29 +155,119 @@
 </head>
 <body>
 <div class="card">
-  <h1>KUIS ECHOSOUNDER</h1>
-  <div class="subtitle">Nyawa 3 &middot; combo streak &middot; power-up 50:50 &middot; 10 detik per soal</div>
+  <h1>KUIS RESOLUSI RENTANG</h1>
+  <div class="subtitle">Kelompok 07 &middot; Dasar-Dasar Akustik &middot; Nyawa 3 &middot; combo streak &middot; 50:50 &middot; 10 detik per soal</div>
   <div id="app"></div>
 </div>
 
 <script>
 const QUESTIONS = [
-  { q: "Alat yang digunakan untuk mengukur kedalaman laut dengan memanfaatkan gelombang suara disebut …", opts: ["Radar", "Echosounder", "Kompas", "Barometer"], a: 1 },
-  { q: "Komponen echosounder yang berfungsi mengubah energi listrik menjadi gelombang suara dan menerima kembali pantulannya adalah …", opts: ["Transducer", "Display", "Baterai", "Kabel data"], a: 0 },
-  { q: "Prinsip dasar kerja echosounder adalah …", opts: ["Mengukur tekanan air", "Mengukur kecepatan angin", "Mengukur waktu tempuh gelombang suara yang dipantulkan dasar perairan", "Mengukur suhu udara"], a: 2 },
-  { q: "Gelombang suara yang dipancarkan oleh echosounder menuju dasar perairan akan …", opts: ["Diserap seluruhnya oleh air", "Dipantulkan kembali ke transducer", "Berubah menjadi gelombang radio", "Menghilang tanpa pantulan"], a: 1 },
-  { q: "Komponen yang berfungsi menampilkan hasil pengukuran kedalaman adalah …", opts: ["Transducer", "Display/monitor", "Transmitter", "Propeller"], a: 1 },
-  { q: "Jika waktu yang dibutuhkan gelombang suara untuk pergi ke dasar dan kembali semakin lama, maka kedalaman perairan …", opts: ["Semakin dangkal", "Tetap", "Semakin dalam", "Tidak dapat diketahui"], a: 2 },
-  { q: "Secara sederhana, kedalaman perairan pada echosounder dapat dihitung menggunakan rumus …", opts: ["d = v × t", "d = v × t / 2", "d = t / v", "d = v / t"], a: 1 },
-  { q: "Huruf v pada perhitungan kedalaman echosounder menunjukkan …", opts: ["Volume air", "Kecepatan gelombang suara", "Variasi kedalaman", "Waktu pantulan"], a: 1 },
-  { q: "Mengapa waktu tempuh gelombang suara dibagi dua dalam perhitungan kedalaman?", opts: ["Karena gelombang mengalami perubahan arah", "Karena gelombang menempuh perjalanan pergi dan kembali", "Karena kecepatan suara berkurang", "Karena tekanan air meningkat"], a: 1 },
-  { q: "Sebelum mengoperasikan echosounder, salah satu hal yang perlu diperiksa adalah …", opts: ["Warna kapal", "Kondisi transducer dan sumber daya", "Arah angin saja", "Bentuk jangkar"], a: 1 }
+  {
+    q: "Ilmu yang mempelajari pembentukan, perambatan, dan penerimaan gelombang suara disebut …",
+    opts: ["Optik", "Akustik", "Termodinamika", "Geodesi"],
+    a: 1
+  },
+  {
+    q: "Ping pada echosounder adalah …",
+    opts: [
+      "Pulsa suara singkat yang dipancarkan echosounder ke dalam air",
+      "Gelombang radio yang dipancarkan satelit",
+      "Bagian alat yang menampilkan hasil pengukuran",
+      "Kecepatan suara di dalam air"
+    ],
+    a: 0
+  },
+  {
+    q: "Parameter resolusi rentang adalah kemampuan echosounder untuk …",
+    opts: [
+      "Mengukur suhu air laut",
+      "Memancarkan pulsa sejauh mungkin",
+      "Menguatkan sinyal secara otomatis",
+      "Membedakan dua target yang berada pada jarak atau kedalaman berdekatan"
+    ],
+    a: 3
+  },
+  {
+    q: "Resolusi rentang terutama dipengaruhi oleh …",
+    opts: [
+      "Warna dasar perairan",
+      "Ukuran kapal dan jumlah awak",
+      "Durasi pulsa dan kecepatan suara di dalam air",
+      "Kecepatan angin di permukaan"
+    ],
+    a: 2
+  },
+  {
+    q: "Jenis ping berdasarkan durasinya: pulsa pendek dan pulsa panjang masing-masing memberikan …",
+    opts: [
+      "Energi transmisi lebih besar dan resolusi lebih baik",
+      "Resolusi lebih baik dan energi transmisi lebih besar",
+      "Resolusi lebih buruk dan energi transmisi lebih kecil",
+      "Tidak ada perbedaan apa pun"
+    ],
+    a: 1
+  },
+  {
+    q: "Jika panjang pulsa L dan kecepatan suara c, maka rumus untuk menghitung durasi pulsa (τ) adalah …",
+    opts: ["τ = L / c", "τ = L × c", "τ = c / L", "τ = L + c"],
+    a: 0
+  },
+  {
+    q: "Faktor yang memengaruhi kecepatan suara di dalam air adalah …",
+    opts: [
+      "Warna air, bentuk kapal, dan arah angin",
+      "Jumlah ikan dan jenis transduser",
+      "Suhu, salinitas, dan tekanan/kedalaman",
+      "Panjang kabel dan kapasitas baterai"
+    ],
+    a: 2
+  },
+  {
+    q: "Jika durasi pulsa tetap dan kecepatan suara meningkat, maka panjang pulsa akan …",
+    opts: ["Menjadi lebih pendek", "Tetap sama", "Menjadi nol", "Menjadi lebih besar"],
+    a: 3
+  },
+  {
+    q: "Resolusi sasaran (target resolution) dipengaruhi oleh …",
+    opts: [
+      "Hanya warna dan bentuk kapal",
+      "Panjang pulsa, frekuensi, transduser, beam width, dan kondisi perairan",
+      "Hanya kecepatan kapal",
+      "Hanya jumlah baterai yang tersedia"
+    ],
+    a: 1
+  },
+  {
+    q: "Resolusi jarak dinyatakan dengan ΔR = cτ/2. Jika c = 1.500 m/s dan τ = 2 ms (0,002 s), maka ΔR adalah …",
+    opts: ["3 m", "0,75 m", "1,5 m", "3.000 m"],
+    a: 2
+  },
+  {
+    q: "Time Varied Gain (TVG) digunakan untuk …",
+    opts: [
+      "Mengompensasi pelemahan sinyal sehingga echo dari target yang jauh tetap dapat dikenali",
+      "Memperpendek durasi pulsa secara otomatis",
+      "Mengubah frekuensi transduser",
+      "Mengukur salinitas air laut"
+    ],
+    a: 0
+  },
+  {
+    q: "Jika pengaturan gain TVG terlalu besar, maka yang terjadi adalah …",
+    opts: [
+      "Echo dari target yang jauh menjadi sulit dikenali",
+      "Panjang pulsa menjadi lebih pendek",
+      "Kecepatan suara di air berkurang",
+      "Noise atau sinyal yang tidak diinginkan ikut diperkuat"
+    ],
+    a: 3
+  }
 ];
 
 const TIME_LIMIT = 10;
 const MAX_LIVES = 3;
-const HIGH_SCORE_KEY = 'echosounder_family100_highscore';
-const HISTORY_KEY = 'echosounder_family100_history';
+const HIGH_SCORE_KEY = 'resolusi_rentang_quiz_highscore';
+const HISTORY_KEY = 'resolusi_rentang_quiz_history';
 const HISTORY_LIMIT = 8;
 
 function shuffle(arr) {
@@ -187,6 +277,10 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function getHighScore() {
@@ -233,7 +327,7 @@ function renderStart() {
   const historyHtml = history.length
     ? history.map(h => `
         <div class="history-row">
-          <span class="h-name">${h.name}</span>
+          <span class="h-name">${esc(h.name)}</span>
           <span class="h-time">${formatTime(h.ts)}</span>
           <span class="h-score">${h.score} pts</span>
         </div>
@@ -242,7 +336,7 @@ function renderStart() {
 
   root.innerHTML = `
     <div class="start-screen">
-      <p>Jawab 10 soal echosounder dengan urutan acak. Ini bukan sekadar kuis biasa &mdash; ada nyawa, combo, dan power-up.</p>
+      <p>Jawab ${QUESTIONS.length} soal tentang parameter resolusi rentang dengan urutan acak. Ini bukan sekadar kuis biasa &mdash; ada nyawa, combo, dan power-up.</p>
       <div class="rules-grid">
         <div class="rule-item">❤️ <b>3 nyawa</b> &mdash; salah atau kehabisan waktu, nyawa berkurang. Habis nyawa = Game Over.</div>
         <div class="rule-item">🔥 <b>Combo streak</b> &mdash; 2-3 benar beruntun = poin x1.5, 4+ beruntun = poin x2.</div>
@@ -417,7 +511,7 @@ function renderFinal() {
       <div class="progress">${state.gameOver ? 'Nyawa habis' : 'Hasil akhir'}</div>
       <div class="headline">${headline}</div>
       <div class="score-big">${state.score}</div>
-      <div class="detail">${state.name} &middot; benar ${state.correctCount} dari ${state.gameOver ? state.idx + 1 : QUESTIONS.length} soal dicoba</div>
+      <div class="detail">${esc(state.name)} &middot; benar ${state.correctCount} dari ${state.gameOver ? state.idx + 1 : QUESTIONS.length} soal dicoba</div>
       <div class="highscore">${isNewHigh ? '🏆 Rekor baru di device ini!' : 'Rekor tertinggi di device ini: ' + hsShown + ' poin'}</div>
       <button class="start-btn" id="restart">Main lagi</button>
       <div class="device-note">Sesi ini otomatis tercatat di "Riwayat main" pada layar awal, jadi tiap yang main di device ini kelihatan datanya.</div>
